@@ -56,8 +56,8 @@ const Register = () => {
                 {/* name field */}
                 <FormRow type="password" value={values.password} name="password" handleChange={handleChange} />
 
-                <button type="submit" className="btn btn-block">
-                    {values.isMember ? "Login" : "Register"}
+                <button type="submit" className="btn btn-block" disabled={isLoading}>
+                    {isLoading ? "Loading..." : "Submit"}
                 </button>
                 {/* right after submit btn */}
                 {/* toggle button */}
@@ -65,7 +65,7 @@ const Register = () => {
                 <p>
                     {values.isMember ? "Not a member yet?" : "Already a member?"}
 
-                    <button type="button" onClick={toggleMember} className="member-btn" disabled={isLoading}>
+                    <button type="button" onClick={toggleMember} className="member-btn">
                         {values.isMember ? "Register" : "Login"}
                     </button>
                 </p>
