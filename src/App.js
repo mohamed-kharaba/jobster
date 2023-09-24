@@ -1,12 +1,34 @@
-import { Landing, Error, Dashboard, Register } from "./pages";
-
+import { Landing, Error, Register, ProtectedRoute } from "./pages";
+import { Stats, Profile, AddJob, AllJobs, SharedLayout } from "./pages/Dashboard";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Dashboard />,
+        element: (
+            <ProtectedRoute>
+                <SharedLayout />
+            </ProtectedRoute>
+        ),
         errorElement: <Error />,
+        children: [
+            {
+                index: true,
+                element: <Stats />,
+            },
+            {
+                path: "Profile",
+                element: <Profile />,
+            },
+            {
+                path: "AddJob",
+                element: <AddJob />,
+            },
+            {
+                path: "AllJobs",
+                element: <AllJobs />,
+            },
+        ],
     },
     {
         path: "Landing",
