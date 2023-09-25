@@ -1,7 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import customFetch from "../../utils/axios";
-import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "./localStorage";
+// import customFetch from "../../utils/axios";
+import {
+    addUserToLocalStorage,
+    getUserFromLocalStorage,
+    removeUserFromLocalStorage,
+} from "./localStorage";
+
+import {
+    loginUserThunk,
+    registerUserThunk,
+    updateUserThunk,
+} from "./userThunk";
 
 const initialState = {
     isLoading: false,
@@ -9,22 +19,25 @@ const initialState = {
     user: getUserFromLocalStorage(),
 };
 
-export const registerUser = createAsyncThunk("user/registerUser", async (user, thunkAPI) => {
-    try {
-        const resp = await customFetch.post("/auth/register", user);
-        return resp.data;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+export const registerUser = createAsyncThunk(
+    "user/registerUser",
+    async (user, thunkAPI) => {
+        return registerUserThunk("/auth/register", user, thunkAPI);
     }
-});
-export const loginUser = createAsyncThunk("user/loginUser", async (user, thunkAPI) => {
-    try {
-        const resp = await customFetch.post("/auth/login", user);
-        return resp.data;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+);
+
+export const loginUser = createAsyncThunk(
+    "user/loginUser",
+    async (user, thunkAPI) => {
+        return loginUserThunk("/auth/login", user, thunkAPI);
     }
-});
+);
+export const updateUser = createAsyncThunk(
+    "user/updateUser",
+    async (user, thunkAPI) => {
+        return updateUserThunk("/auth/updateUser", user, thunkAPI);
+    }
+);
 
 const userSlice = createSlice({
     name: "user",
@@ -33,6 +46,7 @@ const userSlice = createSlice({
         logoutUser: (state) => {
             state.user = null;
             state.isSidebarOpen = false;
+            toast.success("Logout Successful!");
             removeUserFromLocalStorage();
         },
         toggleSidebar: (state) => {
@@ -66,6 +80,21 @@ const userSlice = createSlice({
                 toast.success(`Welcome Back ${user.name}`);
             })
             .addCase(loginUser.rejected, (state, { payload }) => {
+                state.isLoading = false;
+                toast.error(payload);
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateUser.fulfilled, (state, { payload }) => {
+                const { user } = payload;
+                state.isLoading = false;
+                state.user = user;
+
+                addUserToLocalStorage(user);
+                toast.success("User Updated");
+            })
+            .addCase(updateUser.rejected, (state, { payload }) => {
                 state.isLoading = false;
                 toast.error(payload);
             });
