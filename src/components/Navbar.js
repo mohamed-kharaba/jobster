@@ -26,19 +26,24 @@ const Navbar = () => {
                     <h3 className="logo-text">dashboard</h3>
                 </div>
                 <div className="btn-container">
-                    <button type="button" className="btn" onClick={() => setShowLogout(!showLogout)}>
+                    <button
+                        type="button"
+                        className="btn"
+                        onClick={() => setShowLogout(!showLogout)}>
                         <FaUserCircle />
                         {user?.name}
                         <FaCaretDown />
                     </button>
-                    <div className={showLogout ? "dropdown show-dropdown" : "dropdown"}>
+                    <div
+                        className={
+                            showLogout ? "dropdown show-dropdown" : "dropdown"
+                        }>
                         <button
                             type="button"
                             className="dropdown-btn"
-                            onClick={() => {
-                                dispatch(logoutUser());
-                            }}
-                        >
+                            onClick={() =>
+                                dispatch(logoutUser("Logging out..."))
+                            }>
                             logout
                         </button>
                     </div>
