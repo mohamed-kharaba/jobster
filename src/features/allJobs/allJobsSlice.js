@@ -21,26 +21,38 @@ const initialState = {
     ...initialFiltersState,
 };
 
-export const getAllJobs = createAsyncThunk("allJobs/getJobs", async (_, thunkAPI) => {
-    let url = `/jobs`;
-    try {
-        const resp = await customFetch.get(url);
+export const getAllJobs = createAsyncThunk(
+    "allJobs/getJobs",
+    async (_, thunkAPI) => {
+        // let url = `/jobs`;
+        const { page, search, searchStatus, searchType, sort } =
+            thunkAPI.getState().allJobs;
+        let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`;
+        if (search) {
+            url = url + `&search=${search}`;
+        }
+        try {
+            const resp = await customFetch.get(url);
 
-        return resp.data;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+            return resp.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.msg);
+        }
     }
-});
+);
 
-export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAPI) => {
-    try {
-        const resp = await customFetch.get("/jobs/stats");
-        console.log(resp.data);
-        return resp.data;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data.msg);
+export const showStats = createAsyncThunk(
+    "allJobs/showStats",
+    async (_, thunkAPI) => {
+        try {
+            const resp = await customFetch.get("/jobs/stats");
+            console.log(resp.data);
+            return resp.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.msg);
+        }
     }
-});
+);
 
 const allJobsSlice = createSlice({
     name: "allJobs",
@@ -53,7 +65,7 @@ const allJobsSlice = createSlice({
             state.isLoading = false;
         },
         handleChange: (state, { payload: { name, value } }) => {
-            // state.page = 1;
+            state.page = 1;
             state[name] = value;
         },
         clearFilters: (state) => {
@@ -93,6 +105,12 @@ const allJobsSlice = createSlice({
     },
 });
 
-export const { showLoading, hideLoading, handleChange, clearFilters, changePage } = allJobsSlice.actions;
+export const {
+    showLoading,
+    hideLoading,
+    handleChange,
+    clearFilters,
+    changePage,
+} = allJobsSlice.actions;
 
 export default allJobsSlice.reducer;
